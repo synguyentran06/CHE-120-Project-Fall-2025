@@ -1,34 +1,32 @@
-"""Pacman, classic arcade game.
-
-Exercises
-
-1. Change the board.
-2. Change the number of ghosts.
-3. Change where pacman starts.
-4. Make the ghosts faster/slower.
-5. Make the ghosts smarter.
 """
+HN: Haris Nasir {21184089
+SNT: Sy Nguyen Tran (21120268)
+HGT: Haogang (Hugo) Tang (21139238)
 """
+
+"""
+Note to Hugo and Haris
 In order for this to work on Spyder, make sure that you type in on the bottom right window
 pip install freegames
 """
 
-from random import choice
-from turtle import *
+from random import choice #SNT: Import from random module choice
+from turtle import * #SNT: Import turtle module, which is responsible for setting up the games
 
-from freegames import floor, vector
+from freegames import floor, vector #SNT: Import neccessary functions, to make the function works
 
-state = {'score': 0}
-path = Turtle(visible=False)
-writer = Turtle(visible=False)
-aim = vector(5, 0)
-pacman = vector(-40, -80)
+state = {'score': 0} #SNT: Initialize the score board, as a dictionary
+path = Turtle(visible=False) #SNT: Create an object called path, with the class of Turtle, whose visibility is turned off
+writer = Turtle(visible=False) #SNT: Create an object called writer, with the class of Turtle, whose visibility is turned off
+aim = vector(5, 0) #SNT: Create an aiming vector with the value of [5, 0]
+pacman = vector(-40, -80) #SNT: Create a pacman vectr with the value of [-40, -80]
 ghosts = [
     [vector(-180, 160), vector(5, 0)],
     [vector(-180, -160), vector(0, 5)],
     [vector(100, 160), vector(0, -5)],
     [vector(100, -160), vector(-5, 0)],
-]
+ ] #SNT: Create 4 new ghosts, each having two vectors associating to it
+
 # fmt: off
 tiles = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -52,6 +50,7 @@ tiles = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ]
+#SNT: Creat a map of the game, where 1 is viable path, and where walls is 0
 # fmt: on
 
 
