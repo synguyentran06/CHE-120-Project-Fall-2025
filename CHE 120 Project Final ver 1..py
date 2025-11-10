@@ -50,45 +50,98 @@ tiles = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ]
-#SNT: Creat a map of the game, where 1 is viable path, and where walls is 0
+"""
+SNT: Creat a map of the game, where 1 is viable path, and where walls is 0
+To be noted, the grid itself is presented as essentially a 2D matrix. However, in actuality, it's actually juat one list, but with an enter every 20 entries to appear like a grid.
+"""
 # fmt: on
 
 
 def square(x, y):
     """Draw square using path at (x, y)."""
-    path.up()
-    path.goto(x, y)
-    path.down()
-    path.begin_fill()
+    """
+    SNT: This functions esentially draw a square
+    However, as will later be seen in world(), each time a tile is drawn, square() is called.
+    This makes each a tile 20x20.
+    """
+    path.up() #SNT: allows the turtle "path" (which is a drawing pen, essentially) to lift up from the page and draw nothing
+    path.goto(x, y) #SNT: moves the turtle "path" to the position (x, y) which is inputed into the 
+    path.down() #SNT: This essentially put the turle "pen" down onto the page to begin to draw
+    path.begin_fill() #SNT: This intializes the starting point of the shape that about to be draw by the turle "path"
 
-    for count in range(4):
+    for count in range(4): #SNT: Allows this entire block to run a total of four times
+        """
+        SNT: The entire block essentially makes the turtle "path" goes straight 20 times, turns 90 degree left
+        After completing this 4 times, the turle "path" essentially drew a square
+        """
         path.forward(20)
         path.left(90)
 
-    path.end_fill()
+    path.end_fill() #SNT: This ends and fill the shape intialized on line 65 with color
 
 
 def offset(point):
     """Return offset of point in tiles."""
+    """
+    SNT:
+    This function essentially takes in the pixel position of any object and convert it into one of the tiles, whose values can be searched
+    up in the list "tiles".
+    """
     x = (floor(point.x, 20) + 200) / 20
     y = (180 - floor(point.y, 20)) / 20
+    """
+    SNT:
+    Each tiles is essentially 20x20 pixels. The floor(point.x, 20) and floor (point.y, 20)
+    return a value which is an interger multples of 20 (ex: -40, -20, 0, 20, et.c) from the x and y positions of any input "point".
+    When this value is divided by 20, it returned an integer (not int type, but like "math integer") which represent (x, y) position
+    in the list "tiles" when represented as grid.
+    On line 85, the 200 is the horizontal offset that the entire world is created in, so needed to be accounted for here.
+    On line 86, the 180 is the vertical offset that the entire world is created in, so needed to be accounted here.
+    Furthermore, on line 86, floor(point.y, 20) is subtracted since pixel increases in value as we go up vertically. However, the index in list "tiles"
+    increases in value as we go down. Therefore, subtracting floor(point.y, 20) accounted for subtracting
+    """
     index = int(x + y * 20)
+    """
+    SNT:
+    Instead of storing the index as (x, y) where x is the x-th column of the list "tiles" and y as the y-th row of the lits "tiles",
+    index is stored essentially as one ordinal the list "tiles" 
+    To convert (x, y) to an ordinal, we noticed that every row has 20 entries. To skip down 3 rows, we add 3*20.
+    To move sideways by 4 entries, we simply add 4.
+    As such the general formula to convert (x, y) to an ordinal numbers is:
+    (x, y) -> x + y * (number of entries per row) where 20 is the number of entries per row 
+    """
     return index
 
 
 def valid(point):
     """Return True if point is valid in tiles."""
-    index = offset(point)
+    index = offset(point) #SNT: Index is assigned the index in the list "tiles" in which "point" reside.
+    #SNT: Essentially, we captured the current location of the input "point".
 
-    if tiles[index] == 0:
-        return False
+    if tiles[index] == 0: 
+        return False #SNT: If the tile in which "point" reside in correspond to a 0 in the list "tiles", then it's not valid. AKA, "point" is in a wall. 
 
     index = offset(point + 19)
+    """
+    SNT:
+    Recalling that each tiles is only 20x20.
+    When "point" + 19, it is moved 19 pixels up and right.
+    If and only if the "point" is originally on the very bottom left corner of the tiles, after being shifted, it would remained in the same tiles.
+    Other wise, it would be moved to another tiles.
+    """
 
     if tiles[index] == 0:
         return False
+    #SNT: Here, we checked if this new position is also a wall.
+    #SNT: This extra step essentially check if there's any collision at the "point" current location, and 19 pixels around it.
 
     return point.x % 20 == 0 or point.y % 20 == 0
+    """
+    SNT:
+    point.x % 20 and point.y % 20 checked if this the "point" is on the edge of a tiles.
+    If either of this is true, then True is returned.
+    This ensure "point" is on a grid line.
+    """
 
 
 def world():
