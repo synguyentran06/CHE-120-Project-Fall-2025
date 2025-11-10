@@ -146,10 +146,10 @@ def valid(point):
 
 def world():
     """Draw world using path."""
-    bgcolor('black')
-    path.color('blue')
+    bgcolor('black') #SNT: Set background color to black
+    path.color('blue') #SNT: Set "path" colour to blue
 
-    for index in range(len(tiles)):
+    for index in range(len(tiles)): 
         tile = tiles[index]
 
         if tile > 0:
