@@ -16,10 +16,10 @@ from turtle import * #SNT: Import turtle module, which is responsible for settin
 from freegames import floor, vector #SNT: Import neccessary functions, to make the function works
 
 state = {'score': 0} #SNT: Initialize the score board, as a dictionary
-path = Turtle(visible=False) #SNT: Create an object called path, with the class of Turtle, whose visibility is turned off
-writer = Turtle(visible=False) #SNT: Create an object called writer, with the class of Turtle, whose visibility is turned off
-aim = vector(5, 0) #SNT: Create an aiming vector with the value of [5, 0]
-pacman = vector(-40, -80) #SNT: Create a pacman vectr with the value of [-40, -80]
+path = Turtle(visible=False) #SNT: Create an object called path, with the class of Turtle, whose visibility is turned off. This turtle is responsible to draw the world.
+writer = Turtle(visible=False) #SNT: Create an object called writer, with the class of Turtle, whose visibility is turned off. This turtle is responsible for drawing pacman and ghosts.
+aim = vector(5, 0) #SNT: Create an aiming vector with the value of [5, 0], which in the context of this games, is pointing to the right.
+pacman = vector(-40, -80) #SNT: Create a pacman vector with the value of [-40, -80]
 ghosts = [
     [vector(-180, 160), vector(5, 0)],
     [vector(-180, -160), vector(0, 5)],
@@ -51,7 +51,7 @@ tiles = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ]
 """
-SNT: Creat a map of the game, where 1 is viable path, and where walls is 0
+SNT: Creat a map of the game, where 1 is an untraveled path, 2 is a traveled path and walls is 0
 To be noted, the grid itself is presented as essentially a 2D matrix. However, in actuality, it's actually juat one list, but with an enter every 20 entries to appear like a grid.
 """
 # fmt: on
@@ -115,6 +115,7 @@ def offset(point):
 
 def valid(point):
     """Return True if point is valid in tiles."""
+    #SNT: This function should only be given pixel coordinates.
     index = offset(point) #SNT: Index is assigned the index in the list "tiles" in which "point" reside.
     #SNT: Essentially, we captured the current location of the input "point".
 
@@ -140,7 +141,7 @@ def valid(point):
     SNT:
     point.x % 20 and point.y % 20 checked if this the "point" is on the edge of a tiles.
     If either of this is true, then True is returned.
-    This ensure "point" is on a grid line.
+    This ensure "point" is on a grid line, which for this games are like track that pac man and ghost can travel.
     """
 
 
@@ -155,6 +156,7 @@ def world():
         This for loop goes through each values of the list "tiles", and for each of the value, it draws a corresponding square tiles in pixles for us to view.
         If value of a tile in the list "tiles" is greater than zero, it draws a square using the square() function aboves.
         If the value is 1, the turtle "path" is lifted from the page and shift up 10 and horizontally 10, and white dot of 2 pixle is drawn, creating those coins that the pac man can eat.
+        In the context of this game, 0 is wall, 1 is untraveled path, 2 is traveled path.
         """
         tile = tiles[index] 
 
@@ -165,26 +167,58 @@ def world():
 
             if tile == 1:
                 path.up() #SNT: If tile == 1, then the tutle "path" is lifted of the page, shifted and draw a dot acting as "coins" for the pac man to eat.
-                path.goto(x + 10, y + 10)
+                path.goto(x + 10, y + 10) #SNT: To be noted, when the tile is drawn, it's always draw on the grid line. So when we shifted 10 up and 10 right, the "coins" is draw in center of the tiles
                 path.dot(2, 'white')
 
 
 def move():
     """Move pacman and all ghosts."""
-    writer.undo()
-    writer.write(state['score'])
+    """
+    SNT:
+    The main purpose of this function is to move the pac man and the ghost around.
+    However, some of the code here makes little sense out of the context which it is used.
+    """
+    writer.undo() #SNT: Undo the what the previous turtle "writer" wrote.
+    """
+    SNT:
+    In the context in which move() is called, a few line above, the turtle "writer" is commanded to write out the score.
+    As such writer.undo() erased any previously written out score
+    """
+    writer.write(state['score']) #SNT: Use the turtle "writer" to write out the new score of the game.
 
     clear()
+    """
+    SNT:
+    This functions clear previous drawing done by the turtles.
+    Without this function, when the ghosts and pacman moves, its creates a trail.
+    We intends to use this functions to create an extra feature in the games.
+    """
 
     if valid(pacman + aim):
         pacman.move(aim)
+        """
+        SNT:
+        This function checks if the pacman can moves to a certain place.
+        Understanding that "pacman" and "aims" are both vectors, pactman + aim is essentially the position vector of where the pacman intends to go.
+        valid(pacman + aim) check if the points are valid for the pacman to move into.
+        pacman.move(aim) essentially moves pacman by aim. 
+        """
 
-    index = offset(pacman)
+    index = offset(pacman) #SNT: Locates the location of pacman on the pixel coordinates and returns its index in the list "tiles"
 
     if tiles[index] == 1:
-        tiles[index] = 2
-        state['score'] += 1
-        x = (index % 20) * 20 - 200
+        """
+        SNT:
+        This if statement check if the current location of the pacman is in an untraveled path. This allows the games to tally score
+        This is accomplished if the tile's stored value at index in the list "tiles" is 1.
+        If it is, the tile's stored value is changed to 2. And a score is added
+        In the context of the game, 1 is untraveled path, 2 is travelled path.
+        As such, if tiles has already been traveled, its value is 2 so this if statement won't be triggered, and no new points is added.
+        """
+        tiles[index] = 2 #SNT: Update the tile's stored value to 2, so the program knows we traveled over this tiles.
+
+        state['score'] += 1 #SNT: The user score is increase by 1.
+        x = (index % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coints in the middle"
         y = 180 - (index // 20) * 20
         square(x, y)
 
