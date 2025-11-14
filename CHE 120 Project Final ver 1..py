@@ -150,15 +150,21 @@ def world():
     path.color('blue') #SNT: Set "path" colour to blue
 
     for index in range(len(tiles)): 
-        tile = tiles[index]
+        """
+        SNT:
+        This for loop goes through each values of the list "tiles", and for each of the value, it draws a corresponding square tiles in pixles for us to view.
+        If value of a tile in the list "tiles" is greater than zero, it draws a square using the square() function aboves.
+        If the value is 1, the turtle "path" is lifted from the page and shift up 10 and horizontally 10, and white dot of 2 pixle is drawn, creating those coins that the pac man can eat.
+        """
+        tile = tiles[index] 
 
         if tile > 0:
-            x = (index % 20) * 20 - 200
-            y = 180 - (index // 20) * 20
-            square(x, y)
+            x = (index % 20) * 20 - 200 #SNT: Convert the corresponding values from the list "tiles" to an actual tiles that hte user can see, refer to square()'s commenting for more information as they are the same thing.
+            y = 180 - (index // 20) * 20 #SNT: Similar to the above
+            square(x, y) #SNT: Draw the actual tiles
 
             if tile == 1:
-                path.up()
+                path.up() #SNT: If tile == 1, then the tutle "path" is lifted of the page, shifted and draw a dot acting as "coins" for the pac man to eat.
                 path.goto(x + 10, y + 10)
                 path.dot(2, 'white')
 
