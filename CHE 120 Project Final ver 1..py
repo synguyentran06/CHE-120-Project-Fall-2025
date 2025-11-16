@@ -8,9 +8,6 @@ HGT: Haogang (Hugo) Tang (21139238)
 Note to Hugo and Haris
 In order for this to work on Spyder, make sure that you type in on the bottom right window
 pip install freegames
-
-Note to future revision:
-Confirm whether pacman.y + 10 shift the pacman up 10 in the context of the games or not
 """
 
 from random import choice #SNT: Import from random module choice
@@ -28,8 +25,8 @@ ghosts = [
     [vector(-180, -160), vector(0, 5)],
     [vector(100, 160), vector(0, -5)],
     [vector(100, -160), vector(-5, 0)],
- ] 
- """
+ ]
+"""
  SNT:
  The variable "ghosts" stores 4 new ghosts as sublist, each having two vectors associating to it. The first vector of each sublist is the position vector, the second vector is the velocity vector
  In the context of this game:
@@ -194,7 +191,9 @@ def move():
     """
     SNT:
     In the context in which move() is called, a few line above, the turtle "writer" is commanded to write out the score.
-    As such writer.undo() erased any previously written out score
+    As such writer.undo() erased any previously written out score.
+    Furthermore, when move() is called, in itself is a function that keeps on calling move(). As such, move is continously called again and again.
+    Therefore, having writer.undo() is neccesary to erased previously written scores.
     """
     writer.write(state['score']) #SNT: Use the turtle "writer" to write out the new score of the game.
 
@@ -276,8 +275,8 @@ def move():
             course.y = plan.y
             """
             SNT:
-            In the context of this game, this function is called multiples time a game. If the ghost can't move in this turn, its velocity is randomly changed.
-            The next time this function is called, the function re-elevaluate if that velocity vector would create a valid motion (aka: don't enter a wall). This keep occuring until a valid direction is picked.
+            In the context of this game, this function (move()) is called multiples time, continously in a game. If the ghost can't move in this turn, its velocity is randomly changed.
+            The next time this function is called, the function re-elevaluate if that velocity vector would create a valid motion (aka: don't enter a wall). This keep occuring until a valid direction is randomly picked.
             """
         """
         SNT:
@@ -303,26 +302,74 @@ def move():
             return #SNT: Interupt the game
 
     ontimer(move, 100)
+    """
+    SNT:
+    ontimer() is turtle function which takes in a function with no arguments for its first argument. In this case this is the function move(), which is the same function it is in.
+    The second arguments is the time intervals before the function in the first interval is re-called.
+    What this does is essentially after move() has been called, move() would carries out all its task and called itself again every 100 ticks of the computers, and keep repeating.
+    """
 
 
 def change(x, y):
     """Change pacman aim if valid."""
-    if valid(pacman + vector(x, y)):
-        aim.x = x
+    """
+    SNT:
+    this function takes in two arguments, and convert does two arguments into a vector.
+    If then see if the pacman could validly moves x horizontally and y vertically, by using the if statment.
+    If it could, it changes the aim vector of the pacman
+    """
+    if valid(pacman + vector(x, y)): #SNT: Check if the pacman could move x horixzontally and y vertically.
+        aim.x = x #SNT: If it could, the pacman's aim vector is changed.
         aim.y = y
 
 
-setup(420, 420, 370, 0)
-hideturtle()
-tracer(False)
+setup(420, 420, 370, 0) #SNT: This function opens and position the graphic windows which we can see the games with.
+hideturtle() #SNT: This hides the turtle while it's drawing, allowing the graphic to appear smoother.
+tracer(False) #SNT: If this is turns off, we can see the motion of the turtle drawing out each and every tiles and scores, and while it's very helpful to see what's the code is doing its not aesthetic.
+
+"""
+SNT:
+The code block below essentially moves the turtle "writer" to where the games wants to write out the score.
+This code block is needed to initialized the turtle "writer". Afterward, the function move() will be called and will call itself continously.
+move() is also responsible to keep writing the score, so the code block doesn't need to be looped or rewrittern.
+"""
 writer.goto(160, 160)
 writer.color('white')
 writer.write(state['score'])
-listen()
-onkey(lambda: change(5, 0), 'Right')
-onkey(lambda: change(-5, 0), 'Left')
-onkey(lambda: change(0, 5), 'Up')
-onkey(lambda: change(0, -5), 'Down')
-world()
+
+
+
+listen() #SNT: A turtle function that listen to any input into the module.
+"""
+SNT:
+The turtle function onkey() takes in a function as its first arguement and a key press as its second arguement.
+Here, the turtle changes the aim of the pacman according to which ever key is pressed.
+As previously mentioned above, in the context of the game:
+(5, 0) go right
+(0, 5) go up
+(0, -5) go down
+(-5, 0) go left
+"""
+onkey(lambda: change(5, 0), 'Right')  #SNT: When the right arrow is pressed, the pacman turns right
+onkey(lambda: change(-5, 0), 'Left') #SNT: When the left arrow is pressed, the pacman turns left
+onkey(lambda: change(0, 5), 'Up') #SNT: When the up arrow is pressed, the pacman goes up
+onkey(lambda: change(0, -5), 'Down') #SNT: When the down arrow is pressed, the pacman goes down
+
+world() #SNT: Intialized the coordinates
+
+"""
+SNT:
+move() is called.
+As mentioned above and within the definition of move(): once move() is called, it will call itself again continously.
+Apart from that, move() will write out the score, ensure the pacman moves in the direction choosen, the ghosts moves rnadomly, update tiles and "coins" eaten, and check for collision between pac man and ghost.
+"""
 move()
+
+
+"""
+SNT:
+While at first, it appears weird that the game could play continously when done() is literally mentioned right after move().
+However, since move() call itself upon being called, the code isn't actually being read beyond move(). Only when the pacman and the ghost collides, the functions returns and the progress to done() stopping the game.
+done() actually stops the turtle programing that responsive for the game's graphic, but doesn't close the window. This allows the viewer to keep viewing.
+"""
 done()
