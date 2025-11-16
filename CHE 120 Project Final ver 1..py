@@ -8,6 +8,9 @@ HGT: Haogang (Hugo) Tang (21139238)
 Note to Hugo and Haris
 In order for this to work on Spyder, make sure that you type in on the bottom right window
 pip install freegames
+
+Note to future revision:
+Confirm whether pacman.y + 10 shift the pacman up 10 in the context of the games or not
 """
 
 from random import choice #SNT: Import from random module choice
@@ -25,7 +28,16 @@ ghosts = [
     [vector(-180, -160), vector(0, 5)],
     [vector(100, 160), vector(0, -5)],
     [vector(100, -160), vector(-5, 0)],
- ] #SNT: Create 4 new ghosts, each having two vectors associating to it
+ ] 
+ """
+ SNT:
+ The variable "ghosts" stores 4 new ghosts as sublist, each having two vectors associating to it. The first vector of each sublist is the position vector, the second vector is the velocity vector
+ In the context of this game:
+ (5, 0) go right
+ (0, 5) go up
+ (0, -5) go down
+ (-5, 0) go left
+ """
 
 # fmt: off
 tiles = [
@@ -218,37 +230,76 @@ def move():
         tiles[index] = 2 #SNT: Update the tile's stored value to 2, so the program knows we traveled over this tiles.
 
         state['score'] += 1 #SNT: The user score is increase by 1.
-        x = (index % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coints in the middle"
+        x = (index % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle
         y = 180 - (index // 20) * 20
         square(x, y)
 
+    """
+    SNT:
+    The next three line moves the turtle up and make it goes to a location 10 upward and 10 horizontally from the pacman vector.
+    To be noted, within the context of this game, a position vector for pacman or ghost lays on gridlinnes, while their actual appearances needed to be in center of the tiles.
+    As such, when pacman is drawn, the drawing coodinates is shifted up 10 and horizontally 10.
+    """
     up()
     goto(pacman.x + 10, pacman.y + 10)
     dot(20, 'yellow')
 
     for point, course in ghosts:
-        if valid(point + course):
+        """
+        SNT:
+        This for loop go through each index of the list "ghost". Each time, it accessed and assigned first vector in the sublist in "point" and the second vector in the sublist in "course".
+        "point" is essentially the position vectors of each ghosts.
+        "course" is essentially the velocity vector's of each ghosts.
+        """
+
+        if valid(point + course): #check if the positions where the ghost is aheaded is a valid desitnation
             point.move(course)
+            """
+            SNT:
+            In this portion of the if statement, valid(point + course) check if the new destination of the ghost is a valid point to move to.
+            If it is, it will move there.
+            """
         else:
-            options = [
+            """
+            SNT:
+            This portion of the if statements would be activated if the ghost can't move according to its inset velocity vector since said its destination isn't a valid block.
+            Instead, choice() is used to pick one of the random cardinal velocity vector stored in options, and replace the ghost's velocity vector.
+            """
+            options = [ #SNT: Initialized a list "options", which contains 4 different cardinal velocity vectors
                 vector(5, 0),
                 vector(-5, 0),
                 vector(0, 5),
                 vector(0, -5),
             ]
-            plan = choice(options)
-            course.x = plan.x
+            plan = choice(options) #SNT: A random cardinal velocity vector is picked from "options" and assigned to plan
+            course.x = plan.x #SNT: The course vector is changed into the planned vector.
             course.y = plan.y
-
+            """
+            SNT:
+            In the context of this game, this function is called multiples time a game. If the ghost can't move in this turn, its velocity is randomly changed.
+            The next time this function is called, the function re-elevaluate if that velocity vector would create a valid motion (aka: don't enter a wall). This keep occuring until a valid direction is picked.
+            """
+        """
+        SNT:
+        The next three lines of code essentially drawa the ghost as a red dot in the center of the square.
+        For similar reasons the pac man describe above, the drawing location is 10 pixels up and horizontal.
+        """
         up()
-        goto(point.x + 10, point.y + 10)
+        goto(point.x + 10, point.y + 10) #SNT: Centered the turtle before drawing the red dot, marking the ghost.
         dot(20, 'red')
+        
 
-    update()
+    update() #SNT: This function essentially forces the game to redraw everthing to do the most updated versions. 
 
     for point, course in ghosts:
-        if abs(pacman - point) < 20:
-            return
+        """
+        This for loop essentially check if the pacman had collided with a ghost. The for loop essentially check for each and every ghost
+        In this game, each pac man and ghost is drawn as a circle of diameter of 20 pixles, or radius of 1o.
+        As such when the distance between them is less than 20, it means they have colided.
+        When this happens the function is interupted, and the game stops
+        """
+        if abs(pacman - point) < 20: #SNT: abs(pacman-point) is the distance between ghost and pacman, which is used to determine collisions.
+            return #SNT: Interupt the game
 
     ontimer(move, 100)
 
