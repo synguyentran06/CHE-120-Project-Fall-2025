@@ -293,6 +293,7 @@ def move():
 
     for point, course in ghosts:
         """
+        SNT:
         This for loop essentially check if the pacman had collided with a ghost. The for loop essentially check for each and every ghost
         In this game, each pac man and ghost is drawn as a circle of diameter of 20 pixles, or radius of 1o.
         As such when the distance between them is less than 20, it means they have colided.
