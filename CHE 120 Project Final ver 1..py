@@ -73,6 +73,7 @@ def square(x, y):
     However, as will later be seen in world(), each time a tile is drawn, square() is called.
     This makes each a tile 20x20.
     """
+    
     path.up() #SNT: allows the turtle "path" (which is a drawing pen, essentially) to lift up from the page and draw nothing
     path.goto(x, y) #SNT: moves the turtle "path" to the position (x, y) which is inputed into the 
     path.down() #SNT: This essentially put the turle "pen" down onto the page to begin to draw
@@ -83,6 +84,7 @@ def square(x, y):
         SNT: The entire block essentially makes the turtle "path" goes straight 20 times, turns 90 degree left
         After completing this 4 times, the turle "path" essentially drew a square
         """
+        
         path.forward(20)
         path.left(90)
 
@@ -96,8 +98,10 @@ def offset(point):
     This function essentially takes in the pixel position of any object and convert it into one of the tiles, whose values can be searched
     up in the list "tiles".
     """
+    
     x = (floor(point.x, 20) + 200) / 20
     y = (180 - floor(point.y, 20)) / 20
+    
     """
     SNT:
     Each tiles is essentially 20x20 pixels. The floor(point.x, 20) and floor (point.y, 20)
@@ -109,7 +113,9 @@ def offset(point):
     Furthermore, on line 86, floor(point.y, 20) is subtracted since pixel increases in value as we go up vertically. However, the index in list "tiles"
     increases in value as we go down. Therefore, subtracting floor(point.y, 20) accounted for subtracting
     """
+    
     index = int(x + y * 20)
+    
     """
     SNT:
     Instead of storing the index as (x, y) where x is the x-th column of the list "tiles" and y as the y-th row of the lits "tiles",
@@ -125,13 +131,16 @@ def offset(point):
 def valid(point):
     """Return True if point is valid in tiles."""
     #SNT: This function should only be given pixel coordinates.
+    
     index = offset(point) #SNT: Index is assigned the index in the list "tiles" in which "point" reside.
+    
     #SNT: Essentially, we captured the current location of the input "point".
 
     if tiles[index] == 0: 
         return False #SNT: If the tile in which "point" reside in correspond to a 0 in the list "tiles", then it's not valid. AKA, "point" is in a wall. 
 
     index = offset(point + 19)
+    
     """
     SNT:
     Recalling that each tiles is only 20x20.
@@ -142,10 +151,12 @@ def valid(point):
 
     if tiles[index] == 0:
         return False
+        
     #SNT: Here, we checked if this new position is also a wall.
     #SNT: This extra step essentially check if there's any collision at the "point" current location, and 19 pixels around it.
 
     return point.x % 20 == 0 or point.y % 20 == 0
+    
     """
     SNT:
     point.x % 20 and point.y % 20 checked if this the "point" is on the edge of a tiles.
@@ -160,6 +171,7 @@ def world():
     path.color('blue') #SNT: Set "path" colour to blue
 
     for index in range(len(tiles)): 
+        
         """
         SNT:
         This for loop goes through each values of the list "tiles", and for each of the value, it draws a corresponding square tiles in pixles for us to view.
@@ -167,6 +179,7 @@ def world():
         If the value is 1, the turtle "path" is lifted from the page and shift up 10 and horizontally 10, and white dot of 2 pixle is drawn, creating those coins that the pac man can eat.
         In the context of this game, 0 is wall, 1 is untraveled path, 2 is traveled path.
         """
+        
         tile = tiles[index] 
 
         if tile > 0:
@@ -187,7 +200,9 @@ def move():
     The main purpose of this function is to move the pac man and the ghost around.
     However, some of the code here makes little sense out of the context which it is used.
     """
+    
     writer.undo() #SNT: Undo the what the previous turtle "writer" wrote.
+    
     """
     SNT:
     In the context in which move() is called, a few line above, the turtle "writer" is commanded to write out the score.
@@ -195,6 +210,7 @@ def move():
     Furthermore, when move() is called, in itself is a function that keeps on calling move(). As such, move is continously called again and again.
     Therefore, having writer.undo() is neccesary to erased previously written scores.
     """
+    
     writer.write(state['score']) #SNT: Use the turtle "writer" to write out the new score of the game.
 
     clear()
@@ -207,6 +223,7 @@ def move():
 
     if valid(pacman + aim):
         pacman.move(aim)
+        
         """
         SNT:
         This function checks if the pacman can moves to a certain place.
@@ -373,3 +390,4 @@ However, since move() call itself upon being called, the code isn't actually bei
 done() actually stops the turtle programing that responsive for the game's graphic, but doesn't close the window. This allows the viewer to keep viewing.
 """
 done()
+
