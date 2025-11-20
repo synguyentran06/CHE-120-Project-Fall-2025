@@ -180,9 +180,7 @@ def advanced_level(row, column):
     tiles_index = column + 20 * row #SNT: Convert the grids layout to the index with the list "tiles", which is used to store the map of the game
     if tiles_index == current_tiles:
         levels += 1
-        x_1 = (tiles_index % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle
-        y_! = 180 - (tiles_index // 20) * 20
-        square(x_1, y_1, 'red')
+        
 
 
 if levels == 1 : #SNT Updated: level one:
@@ -207,7 +205,15 @@ if levels == 1 : #SNT Updated: level one:
     (0, -5) go down
     (-5, 0) go left
     """
-
+    """
+    SNT Updated Games rUles:
+    This will draw a redsquare in the top left corner, indicating an exit.
+    21 is the index within the list "tiles" which indicates the top left corner
+    """
+    x_1 = (21 % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle
+    y_1 = 180 - (21 // 20) * 20
+    square(x_1, y_1, 'red')
+    
     # fmt: off
     tiles = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -273,6 +279,9 @@ if levels == 1 : #SNT Updated: level one:
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         ]
+        x_1 = (21 % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle, 21 was used because thats the index within the list "tiles" of the 
+        y_1 = 180 - (21 // 20) * 20
+        square(x_1, y_1, 'red')
 
 
     def move():
@@ -468,7 +477,5 @@ if levels == 1 : #SNT Updated: level one:
     """
     move()
 
-    """
-    SNT Updated Games Rules:
-    Previously, after the pacman is slained, the game would on from the move() and into done() to display the games, however, we dont't want that so done() was removed.
-    """
+    done()
+
