@@ -49,13 +49,17 @@ tiles = [
 # fmt: on
 
 
-def square(x, y):
+def square(x, y, color = 'blue'):
     """Draw square using path at (x, y)."""
-    
+    """
+    SNT Updated:
+    This function originally only draws blue square.
+    However, I added an extra input of color so we can redraw the path as whatever we wished.
+    """
     
     path.up() #SNT: allows the turtle "path" (which is a drawing pen, essentially) to lift up from the page and draw nothing
     path.goto(x, y) #SNT: moves the turtle "path" to the position (x, y) which is inputed into the 
-    path.color('blue') #SNT Updated: Added
+    path.color(color) #SNT Updated: Added
     path.down() #SNT: This essentially put the turle "pen" down onto the page to begin to draw
     path.begin_fill() #SNT: This intializes the starting point of the shape that about to be draw by the turle "path"
 
@@ -124,39 +128,6 @@ def world():
                 path.up() #SNT: If tile == 1, then the tutle "path" is lifted of the page, shifted and draw a dot acting as "coins" for the pac man to eat.
                 path.goto(x + 10, y + 10) #SNT: To be noted, when the tile is drawn, it's always draw on the grid line. So when we shifted 10 up and 10 right, the "coins" is draw in center of the tiles
                 path.dot(2, 'white')
-"""
-SNT: (Modified game rules)
-I copied and paste the square() function but tweak it a bit so it draw a black squares.
-This is done so that the wall appears.
-"""
-def square_black(x, y):
-    """Draw a black square using path at (x, y)."""
-    """
-    SNT: This functions esentially draw a square
-    However, as will later be seen in world(), each time a tile is drawn, square() is called.
-    This makes each a tile 20x20.
-    """
-    
-    path.up() #SNT: allows the turtle "path" (which is a drawing pen, essentially) to lift up from the page and draw nothing
-    path.goto(x, y) #SNT: moves the turtle "path" to the position (x, y) which is inputed into the 
-    path.color('black')
-    path.down() #SNT: This essentially put the turle "pen" down onto the page to begin to draw
-    path.begin_fill() #SNT: This intializes the starting point of the shape that about to be draw by the turle "path"
-
-    for count in range(4): #SNT: Allows this entire block to run a total of four times
-        """
-        SNT: The entire block essentially makes the turtle "path" goes straight 20 times, turns 90 degree left
-        After completing this 4 times, the turle "path" essentially drew a square
-        """
-        
-        path.forward(20)
-        path.left(90)
-
-    path.end_fill() #SNT: This ends and fill the shape intialized on with color
-    #SNT: Since this function change the color of the path I added, an extra line in the square function to set the path color back to blue.
-
-
-
 
 
 
@@ -193,7 +164,7 @@ def modified_game_rules():
             tiles[indice] = 0        
             x = (indice % 20) * 20 - 200 #SNT: The next three line redraw the tiles
             y = 180 - (indice // 20) * 20
-            square_black(x, y)
+            square(x, y, 'black')
     
 
 
