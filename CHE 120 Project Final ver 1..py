@@ -21,11 +21,17 @@ writer = Turtle(visible=False) #SNT: Create an object called writer, with the cl
 aim = vector(5, 0) #SNT: Create an aiming vector with the value of [5, 0], which in the context of this games, is pointing to the right.
 pacman = vector(-40, -80) #SNT: Create a pacman vector with the value of [-40, -80]
 ghosts = [
-    [vector(-180, 160), vector(5, 0)],
-    [vector(-180, -160), vector(0, 5)],
-    [vector(100, 160), vector(0, -5)],
-    [vector(100, -160), vector(-5, 0)],
+    [vector(-180, 160), vector(10, 0)],
+    [vector(-180, -160), vector(0, 10)],
+    [vector(100, 160), vector(0, -10)],
+    [vector(100, -160), vector (-10, 0)],
  ]
+"""
+ HN:
+ The second vector, i.e. vector(10,0) is responsible for controlling the speed of the ghosts, where the number 10 corresponds the speed that the ghost travels with.
+ The number can be increased to speed up the ghosts or decreased to speed down the ghosts. For this level, the ghosts are meant to speed up to raise the difficulty,
+ therefore the speed has been increased from 5 to 10.
+"""
 """
  SNT:
  The variable "ghosts" stores 4 new ghosts as sublist, each having two vectors associating to it. The first vector of each sublist is the position vector, the second vector is the velocity vector
@@ -63,9 +69,44 @@ tiles = [
 SNT: Creat a map of the game, where 1 is an untraveled path, 2 is a traveled path and walls is 0
 To be noted, the grid itself is presented as essentially a 2D matrix. However, in actuality, it's actually juat one list, but with an enter every 20 entries to appear like a grid.
 """
+"""
+HN:
+Tiles is basically the entire map of the game, It is a list containing 1s and 0s where 1 corresponds to a path that the pacman/ghosts can follow
+and 0 corresponds to a wall, which the pacman/ghost can collide with. The map can be changed by changing the positions of the 1s and 0s in the list.
+"""
 # fmt: on
 
+def spawn_ghost():
+    """
+    HN: Spawns a new ghost if possible (7 ghosts is the limit for this difficulty level)
+        the ghosts are able to spawn at 4 different locations (the locations are similar to the inital spawn locations of the ghosts
+        and are able to have one of 4 different directions of movement, which is entirely randomized. Therefore it is not known which 
+        direction the newly spawned ghost will travel in neither is the spawn location known.
+    """
+    # HN: This line is what allows the newly spawned ghosts to spawn at any one of the four given locations. These locations are the same as the other ghosts.
+    if len(ghosts) < 7:
+        possible_spawn_point = [
+            vector(-180, 160),
+            vector(-180, -160),
+            vector(100, 160),
+            vector(100, -160)]
 
+        spawn_point = choice(possible_spawn_point) #HN: Choice allows the game to randomly choose one of the given four spawn points.
+
+        # HN: This list allows us to be able to choose a random direction for the ghosts.
+        speed_options = [
+            vector(10 , 0), #HN: Right
+            vector(0 , 10), #HN: Up
+            vector(0 , -10), #HN: Down
+            vector(-10 , 0), #HN: Left
+            ]
+        
+        chosen_speed = choice(speed_options) #HN: Similarly choice here allows the game to randomly choose one the four given speed options.
+
+        ghosts.append([spawn_point.copy(), chosen_speed]) #HN: Using the append feature, we able to add a new list to the list storing all the information for ghosts.
+
+    ontimer(spawn_ghost, 30000) 
+    
 def square(x, y):
     """Draw square using path at (x, y)."""
     """
@@ -200,6 +241,10 @@ def move():
     The main purpose of this function is to move the pac man and the ghost around.
     However, some of the code here makes little sense out of the context which it is used.
     """
+    """
+    HN:
+    This is the main function which is responsible for the entire game. Everytime this function is called, the ghost and pacman move once.
+    """
     
     writer.undo() #SNT: Undo the what the previous turtle "writer" wrote.
     
@@ -281,11 +326,16 @@ def move():
             This portion of the if statements would be activated if the ghost can't move according to its inset velocity vector since said its destination isn't a valid block.
             Instead, choice() is used to pick one of the random cardinal velocity vector stored in options, and replace the ghost's velocity vector.
             """
+            """
+            HN:
+            This function has been modified, and the speeds for the ghosts has been increased for difficulty level 2 by changing the value of the vector
+            from (5,0) to (8,0) to make the game more challenging. 
+            """
             options = [ #SNT: Initialized a list "options", which contains 4 different cardinal velocity vectors
-                vector(5, 0),
-                vector(-5, 0),
-                vector(0, 5),
-                vector(0, -5),
+                vector(10, 0),
+                vector(-10, 0),
+                vector(0, 10),
+                vector(0, -10),
             ]
             plan = choice(options) #SNT: A random cardinal velocity vector is picked from "options" and assigned to plan
             course.x = plan.x #SNT: The course vector is changed into the planned vector.
@@ -315,6 +365,11 @@ def move():
         As such when the distance between them is less than 20, it means they have colided.
         When this happens the function is interupted, and the game stops
         """
+        """
+        HN: 
+        Whenever the difference between the two is below 20 (Which is only possible in the case of a collision with the ghost) the game abruptly
+        ends as nothing is called as the return here.
+        """
         if abs(pacman - point) < 20: #SNT: abs(pacman-point) is the distance between ghost and pacman, which is used to determine collisions.
             return #SNT: Interupt the game
 
@@ -324,6 +379,11 @@ def move():
     ontimer() is turtle function which takes in a function with no arguments for its first argument. In this case this is the function move(), which is the same function it is in.
     The second arguments is the time intervals before the function in the first interval is re-called.
     What this does is essentially after move() has been called, move() would carries out all its task and called itself again every 100 ticks of the computers, and keep repeating.
+    """
+    """
+    HN: 
+    The ontimer() function here is basically the determining the tickrate of the game, which is 0.1 seconds or 100 miliseconds in this context
+    as this function takes in time in terms of miliseconds. The tickrate determines how often the code is called.
     """
 
 
@@ -338,7 +398,6 @@ def change(x, y):
     if valid(pacman + vector(x, y)): #SNT: Check if the pacman could move x horixzontally and y vertically.
         aim.x = x #SNT: If it could, the pacman's aim vector is changed.
         aim.y = y
-
 
 setup(420, 420, 370, 0) #SNT: This function opens and position the graphic windows which we can see the games with.
 hideturtle() #SNT: This hides the turtle while it's drawing, allowing the graphic to appear smoother.
@@ -367,6 +426,11 @@ As previously mentioned above, in the context of the game:
 (0, -5) go down
 (-5, 0) go left
 """
+"""
+HN: 
+As mentioned above, this function is what allows the pacman to move in different directions by detecting key presses.
+In order to change the speed of the pacman, the change(5,0) would have to be changed.
+"""
 onkey(lambda: change(5, 0), 'Right')  #SNT: When the right arrow is pressed, the pacman turns right
 onkey(lambda: change(-5, 0), 'Left') #SNT: When the left arrow is pressed, the pacman turns left
 onkey(lambda: change(0, 5), 'Up') #SNT: When the up arrow is pressed, the pacman goes up
@@ -380,6 +444,16 @@ move() is called.
 As mentioned above and within the definition of move(): once move() is called, it will call itself again continously.
 Apart from that, move() will write out the score, ensure the pacman moves in the direction choosen, the ghosts moves rnadomly, update tiles and "coins" eaten, and check for collision between pac man and ghost.
 """
+
+"""
+HN:
+A ghost is meant to spawn every 30 seconds (or 30000 miliseconds) at one of four random spots on the map. The ghost spawning is determined by a function
+defined earlier called "spawn_ghost". This line of contains the turtle function "ontimer" which just ensures that the function spawn_ghost happens every 30000 miliseconds, which 
+once again is just simply 30 seconds since python times in miliseconds. The spawn_ghost function has a limit for a maximum of 7 ghosts.
+"""
+
+ontimer(spawn_ghost, 30000)
+
 move()
 
 
@@ -390,4 +464,5 @@ However, since move() call itself upon being called, the code isn't actually bei
 done() actually stops the turtle programing that responsive for the game's graphic, but doesn't close the window. This allows the viewer to keep viewing.
 """
 done()
+
 
