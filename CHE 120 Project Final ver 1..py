@@ -183,11 +183,76 @@ def advanced_level(row, column):
         levels += 1
         
 
+"""
+SNT Updated games rules:
+This is the first level of the games, which is the unchanged version.
+"""
+aim = vector(5, 0) #SNT: Create an aiming vector with the value of [5, 0], which in the context of this games, is pointing to the right.
+pacman = vector(-40, -80) #SNT: Create a pacman vector with the value of [-40, -80]
+ghosts = [
+    [vector(-180, 160), vector(5, 0)],
+    [vector(-180, -160), vector(0, 5)],
+    [vector(100, 160), vector(0, -5)],
+    [vector(100, -160), vector(-5, 0)],
+]
+"""
+SNT:
+The variable "ghosts" stores 4 new ghosts as sublist, each having two vectors associating to it. The first vector of each sublist is the position vector, the second vector is the velocity vector
+In the context of this game:
+(5, 0) go right
+(0, 5) go up
+(0, -5) go down
+(-5, 0) go left
+"""
+"""
+SNT Updated Games rUles:
+This will draw a redsquare in the top left corner, indicating an exit.
+21 is the index within the list "tiles" which indicates the top left corner
+"""
 
-if levels == 1 : #SNT Updated: level one:
+
+# fmt: off
+tiles = [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0,
+    0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+]
+"""
+SNT: Creat a map of the game, where 1 is an untraveled path, 2 is a traveled path and walls is 0
+To be noted, the grid itself is presented as essentially a 2D matrix. However, in actuality, it's actually juat one list, but with an enter every 20 entries to appear like a grid.
+"""
+# fmt: on
+
+def restart_level_1():
     """
-    SNT Updated games rules:
-    This is the first level of the games, which is the unchanged version.
+    SNT Updated Game rules,
+    This function essentially stores all the intial conditions for level 1.
+    When it is called it resets everything.
+    
+    """
+
+    global aim, pacman, ghosts, tiles, writer
+    writer.undo()
+    """
+    SNT:
+    Since the function requires to have the restart function it is neccesary to have it here.
     """
     aim = vector(5, 0) #SNT: Create an aiming vector with the value of [5, 0], which in the context of this games, is pointing to the right.
     pacman = vector(-40, -80) #SNT: Create a pacman vector with the value of [-40, -80]
@@ -197,23 +262,6 @@ if levels == 1 : #SNT Updated: level one:
         [vector(100, 160), vector(0, -5)],
         [vector(100, -160), vector(-5, 0)],
     ]
-    """
-    SNT:
-    The variable "ghosts" stores 4 new ghosts as sublist, each having two vectors associating to it. The first vector of each sublist is the position vector, the second vector is the velocity vector
-    In the context of this game:
-    (5, 0) go right
-    (0, 5) go up
-    (0, -5) go down
-    (-5, 0) go left
-    """
-    """
-    SNT Updated Games rUles:
-    This will draw a redsquare in the top left corner, indicating an exit.
-    21 is the index within the list "tiles" which indicates the top left corner
-    """
-    
-    
-    # fmt: off
     tiles = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
@@ -236,26 +284,185 @@ if levels == 1 : #SNT Updated: level one:
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ]
-    """
-    SNT: Creat a map of the game, where 1 is an untraveled path, 2 is a traveled path and walls is 0
-    To be noted, the grid itself is presented as essentially a 2D matrix. However, in actuality, it's actually juat one list, but with an enter every 20 entries to appear like a grid.
-    """
-    # fmt: on
+    #SNT: This next portion of the code essentially reset everything
+    world()
+    writer.goto(160, 160)
+    writer.color('white')
+    writer.write(state['score'])
+    writer.write(state['score'])
+    x_1 = (21 % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle, 21 was used because thats the index within the list "tiles" of the 
+    y_1 = 180 - (21 // 20) * 20
+    square(x_1, y_1, 'red')
 
-    def restart_level_1():
-        """
-        SNT Updated Game rules,
-        This function essentially stores all the intial conditions for level 1.
-        When it is called it resets everything.
+
+def move():
+    """Move pacman and all ghosts."""
+    """
+    SNT Updated Games Rules:
+    While all the other functions has been moved outside of the if statement to optimize the game, this function is so crucial to each version of the game that it must be re-intialzied.
+    """
+    """
+    SNT:
+    The main purpose of this function is to move the pac man and the ghost around.
+    However, some of the code here makes little sense out of the context which it is used.
+    """
+    global aim, pacman, ghosts, tiles, levels, move #SNT: This added, to make sure when the game restart, it actually reset the function
+    
+    writer.undo() #SNT: Undo the what the previous turtle "writer" wrote.
+    
+    """
+    SNT:
+    In the context in which move() is called, a few line above, the turtle "writer" is commanded to write out the score.
+    As such writer.undo() erased any previously written out score.
+    Furthermore, when move() is called, in itself is a function that keeps on calling move(). As such, move is continously called again and again.
+    Therefore, having writer.undo() is neccesary to erased previously written scores.
+    """
+    
+    writer.write(state['score']) #SNT: Use the turtle "writer" to write out the new score of the game.
+
+    clear()
+    """
+    SNT:
+    This functions clear previous drawing done by the turtles.
+    Without this function, when the ghosts and pacman moves, its creates a trail.
+    We intends to use this functions to create an extra feature in the games.
+    """
+
+    if valid(pacman + aim):
+        pacman.move(aim)
         
         """
+        SNT:
+        This function checks if the pacman can moves to a certain place.
+        Understanding that "pacman" and "aims" are both vectors, pactman + aim is essentially the position vector of where the pacman intends to go.
+        valid(pacman + aim) check if the points are valid for the pacman to move into.
+        pacman.move(aim) essentially moves pacman by aim. 
+        """
 
-        global aim, pacman, ghosts, tiles, writer
-        writer.undo()
+    index = offset(pacman) #SNT: Locates the location of pacman on the pixel coordinates and returns its index in the list "tiles"
+
+    if tiles[index] == 1:
         """
         SNT:
-        Since the function requires to have the restart function it is neccesary to have it here.
+        This if statement check if the current location of the pacman is in an untraveled path. This allows the games to tally score
+        This is accomplished if the tile's stored value at index in the list "tiles" is 1.
+        If it is, the tile's stored value is changed to 2. And a score is added
+        In the context of the game, 1 is untraveled path, 2 is travelled path.
+        As such, if tiles has already been traveled, its value is 2 so this if statement won't be triggered, and no new points is added.
         """
+        tiles[index] = 2 #SNT: Update the tile's stored value to 2, so the program knows we traveled over this tiles.
+
+        state['score'] += 1 #SNT: The user score is increase by 1.
+        x = (index % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle
+        y = 180 - (index // 20) * 20
+        square(x, y)
+
+    """
+    SNT Updated Game Rules:
+    For level 1, I decided to make the top left corner to be an exit point.
+    """
+    advanced_level(1, 1) #SNT:The top left actually accesible corner is (1,1)
+    
+    """
+    SNT:
+    The next three line moves the turtle up and make it goes to a location 10 upward and 10 horizontally from the pacman vector.
+    To be noted, within the context of this game, a position vector for pacman or ghost lays on gridlinnes, while their actual appearances needed to be in center of the tiles.
+    As such, when pacman is drawn, the drawing coodinates is shifted up 10 and horizontally 10.
+    """
+    up()
+    goto(pacman.x + 10, pacman.y + 10)
+    dot(20, 'yellow')
+
+    for point, course in ghosts:
+        """
+        SNT:
+        This for loop go through each index of the list "ghost". Each time, it accessed and assigned first vector in the sublist in "point" and the second vector in the sublist in "course".
+        "point" is essentially the position vectors of each ghosts.
+        "course" is essentially the velocity vector's of each ghosts.
+        """
+
+        if valid(point + course): #check if the positions where the ghost is aheaded is a valid desitnation
+            point.move(course)
+            """
+            SNT:
+            In this portion of the if statement, valid(point + course) check if the new destination of the ghost is a valid point to move to.
+            If it is, it will move there.
+            """
+        else:
+            """
+            SNT:
+            This portion of the if statements would be activated if the ghost can't move according to its inset velocity vector since said its destination isn't a valid block.
+            Instead, choice() is used to pick one of the random cardinal velocity vector stored in options, and replace the ghost's velocity vector.
+            """
+            options = [ #SNT: Initialized a list "options", which contains 4 different cardinal velocity vectors
+                vector(5, 0),
+                vector(-5, 0),
+                vector(0, 5),
+                vector(0, -5),
+            ]
+            plan = choice(options) #SNT: A random cardinal velocity vector is picked from "options" and assigned to plan
+            course.x = plan.x #SNT: The course vector is changed into the planned vector.
+            course.y = plan.y
+            """
+            SNT:
+            In the context of this game, this function (move()) is called multiples time, continously in a game. If the ghost can't move in this turn, its velocity is randomly changed.
+            The next time this function is called, the function re-elevaluate if that velocity vector would create a valid motion (aka: don't enter a wall). This keep occuring until a valid direction is randomly picked.
+            """
+        """
+        SNT:
+        The next three lines of code essentially drawa the ghost as a red dot in the center of the square.
+        For similar reasons the pac man describe above, the drawing location is 10 pixels up and horizontal.
+        """
+        up()
+        goto(point.x + 10, point.y + 10) #SNT: Centered the turtle before drawing the red dot, marking the ghost.
+        dot(20, 'red')
+        
+
+    update() #SNT: This function essentially forces the game to redraw everthing to do the most updated versions. 
+
+    for point, course in ghosts:
+        """
+        SNT:
+        This for loop essentially check if the pacman had collided with a ghost. The for loop essentially check for each and every ghost
+        In this game, each pac man and ghost is drawn as a circle of diameter of 20 pixles, or radius of 1o.
+        As such when the distance between them is less than 20, it means they have colided.
+        When this happens the function is interupted, and the game stops
+        """
+        if abs(pacman - point) < 20: #SNT: abs(pacman-point) is the distance between ghost and pacman, which is used to determine collisions.
+            restart_level_1()
+
+    """
+    SNT Updated Games Rules:
+    Previously the ontimer(move, 100) is just executed until the games ends, however, here we only want it to be excuted if the level is correct.
+    """
+    if levels == 1:
+        ontimer(move, 100)
+        """
+        SNT:
+        ontimer() is turtle function which takes in a function with no arguments for its first argument. In this case this is the function move(), which is the same function it is in.
+        The second arguments is the time intervals before the function in the first interval is re-called.
+        What this does is essentially after move() has been called, move() would carries out all its task and called itself again every 100 ticks of the computers, and keep repeating.
+        """
+    if levels == 2:
+        """
+        SNT:
+        Due to the mechanics of turles, we can't figure out to have seperate if statements for each levels.
+        This is because done() is needed to run the games, so afterward, no code after done() will ever be excuted. As such, if statement can't be placed before done.
+        However, move() are continously called prior to done(), and for some reason, if we put an if statment for level 2, there the games just stops when it reaches level 2.
+        We couldn't figure out how to make it works.
+        The only way it works -we found after extensive searching online- is to defined within move() an if statment that would redefined move.
+        Then afterward the games runs smoothly.
+
+        Essentially, move() is a function that will call upon itself continously until the games is completed.
+        It is also a function that would rewrite itself when certain conditions is met, which intialized the next level.
+        We're very sorry for the convuluted code but this is the only way it works.
+
+        """
+        """
+        SNT: To make it easier to integrate everybody's code, we make sure to have everything reassigned so it's easier to make sure everything works toghether.
+        We have the functions nestles like dolls like this because the game just doesn't work otherwise
+        """
+
         aim = vector(5, 0) #SNT: Create an aiming vector with the value of [5, 0], which in the context of this games, is pointing to the right.
         pacman = vector(-40, -80) #SNT: Create a pacman vector with the value of [-40, -80]
         ghosts = [
@@ -264,6 +471,9 @@ if levels == 1 : #SNT Updated: level one:
             [vector(100, 160), vector(0, -5)],
             [vector(100, -160), vector(-5, 0)],
         ]
+
+
+        # fmt: off
         tiles = [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
@@ -286,213 +496,190 @@ if levels == 1 : #SNT Updated: level one:
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         ]
-        #SNT: This next portion of the code essentially reset everything
-        world()
+
+        # fmt: on
+
+
+        """
+        SNT: (Modified Game Rule)
+        We decided to make a new feature where the pacman can't traveled on twice on a path it already traversed. This makes the player more comprehensive when moving around.
+        This is accomplished, by changing the stored tile's value as 0 when the pacman encountered a travel tiles, which is 2.
+        However, if we have it so that the game will change the path as the pacman goes, then the pacman just becomes immobolized. As such we have a set timer, that makes it so the game updated every so often.
+        However, the the old path will become block when pacman ate a coin. This is intentional to avoid blocking the user too early.
+        """
+        traveled = [] #SNT Updated: Initialized an empty list that would keep track of which path the pacman travelled in.
+        def modified_game_rules():
+            just_traveled_tiles = offset(pacman) #SNT: Track the index in the list "tiles" that the pacman currently in
+            traveled.append(just_traveled_tiles) #create a list that track the path the pacman traveled
+            if len(traveled) > 10:
+                """
+                SNT:
+                This if statement check if the pacman has traveled more than 5 tiles.
+                If it is, the first tile the pacman traveled is turned to a wall first. And as the pacman traveled further, the if statement is retriggered, the oldest tiles start becoming walls one by one.
+                This accomplished using the list.pop(0) method which extract the first entry and shift everything up.
+                This allows each of the tiles traveled to turn into a wall one at a time.
+                """
+                if tiles[traveled[0]] == 2:
+                    indice = traveled.pop(0) #SNT: Extract the oldest traveled tiles, and remove it from the list
+                    tiles[indice] = 0        
+                    x = (indice % 20) * 20 - 200 #SNT: The next three line redraw the tiles
+                    y = 180 - (indice // 20) * 20
+                    square(x, y, 'black')
+            
+
+
+        def move():
+            """Move pacman and all ghosts."""
+            
+            
+            writer.undo() #SNT: Undo the what the previous turtle "writer" wrote.
+            
+            
+            writer.write(state['score']) #SNT: Use the turtle "writer" to write out the new score of the game.
+
+            clear()
+        
+
+            if valid(pacman + aim):
+                pacman.move(aim)
+                
+        
+
+            index = offset(pacman) #SNT: Locates the location of pacman on the pixel coordinates and returns its index in the list "tiles"
+
+            if tiles[index] == 1:
+                
+                tiles[index] = 2 #SNT: Update the tile's stored value to 2, so the program knows we traveled over this tiles.
+
+                state['score'] += 1 #SNT: The user score is increase by 1.
+                
+                """
+                SNT Modified game Rules:
+                By putting the modified_game_rules here it allows the traveled tiles to turn into walls as the pacman moves into a valid cell.
+                This works because move() is being called repeatedly, and as such this function will be called as well.
+                """
+                modified_game_rules()
+
+                x = (index % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle
+                y = 180 - (index // 20) * 20
+                square(x, y)
+
+
+            up()
+            goto(pacman.x + 10, pacman.y + 10)
+            dot(20, 'yellow')
+
+            for point, course in ghosts:
+            
+
+                if valid(point + course): #check if the positions where the ghost is aheaded is a valid desitnation
+                    point.move(course)
+                    
+                else:
+                    
+                    options = [ #SNT: Initialized a list "options", which contains 4 different cardinal velocity vectors
+                        vector(5, 0),
+                        vector(-5, 0),
+                        vector(0, 5),
+                        vector(0, -5),
+                    ]
+                    plan = choice(options) #SNT: A random cardinal velocity vector is picked from "options" and assigned to plan
+                    course.x = plan.x #SNT: The course vector is changed into the planned vector.
+                    course.y = plan.y
+                    
+            
+                up()
+                goto(point.x + 10, point.y + 10) #SNT: Centered the turtle before drawing the red dot, marking the ghost.
+                dot(20, 'red')
+                
+
+            update() #SNT: This function essentially forces the game to redraw everthing to do the most updated versions. 
+
+            for point, course in ghosts:
+                
+                if abs(pacman - point) < 20: #SNT: abs(pacman-point) is the distance between ghost and pacman, which is used to determine collisions.
+                    restart_level_1()
+            ontimer(move, 100)
+            
+
+
+        def change(x, y):
+            """Change pacman aim if valid."""
+        
+            if valid(pacman + vector(x, y)): #SNT: Check if the pacman could move x horixzontally and y vertically.
+                aim.x = x #SNT: If it could, the pacman's aim vector is changed.
+                aim.y = y
+
+
+        setup(420, 420, 370, 0) #SNT: This function opens and position the graphic windows which we can see the games with.
+        hideturtle() #SNT: This hides the turtle while it's drawing, allowing the graphic to appear smoother.
+        tracer(False) #SNT: If this is turns off, we can see the motion of the turtle drawing out each and every tiles and scores, and while it's very helpful to see what's the code is doing its not aesthetic.
+
+
         writer.goto(160, 160)
         writer.color('white')
         writer.write(state['score'])
-        writer.write(state['score'])
-        x_1 = (21 % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle, 21 was used because thats the index within the list "tiles" of the 
-        y_1 = 180 - (21 // 20) * 20
-        square(x_1, y_1, 'red')
-
-
-    def move():
-        """Move pacman and all ghosts."""
-        """
-        SNT Updated Games Rules:
-        While all the other functions has been moved outside of the if statement to optimize the game, this function is so crucial to each version of the game that it must be re-intialzied.
-        """
-        """
-        SNT:
-        The main purpose of this function is to move the pac man and the ghost around.
-        However, some of the code here makes little sense out of the context which it is used.
-        """
-        global aim, pacman, ghosts, tiles, levels #SNT: This added, to make sure when the game restart, it actually reset the function
-        
-        writer.undo() #SNT: Undo the what the previous turtle "writer" wrote.
-        
-        """
-        SNT:
-        In the context in which move() is called, a few line above, the turtle "writer" is commanded to write out the score.
-        As such writer.undo() erased any previously written out score.
-        Furthermore, when move() is called, in itself is a function that keeps on calling move(). As such, move is continously called again and again.
-        Therefore, having writer.undo() is neccesary to erased previously written scores.
-        """
-        
-        writer.write(state['score']) #SNT: Use the turtle "writer" to write out the new score of the game.
-
-        clear()
-        """
-        SNT:
-        This functions clear previous drawing done by the turtles.
-        Without this function, when the ghosts and pacman moves, its creates a trail.
-        We intends to use this functions to create an extra feature in the games.
-        """
-
-        if valid(pacman + aim):
-            pacman.move(aim)
-            
-            """
-            SNT:
-            This function checks if the pacman can moves to a certain place.
-            Understanding that "pacman" and "aims" are both vectors, pactman + aim is essentially the position vector of where the pacman intends to go.
-            valid(pacman + aim) check if the points are valid for the pacman to move into.
-            pacman.move(aim) essentially moves pacman by aim. 
-            """
-
-        index = offset(pacman) #SNT: Locates the location of pacman on the pixel coordinates and returns its index in the list "tiles"
-
-        if tiles[index] == 1:
-            """
-            SNT:
-            This if statement check if the current location of the pacman is in an untraveled path. This allows the games to tally score
-            This is accomplished if the tile's stored value at index in the list "tiles" is 1.
-            If it is, the tile's stored value is changed to 2. And a score is added
-            In the context of the game, 1 is untraveled path, 2 is travelled path.
-            As such, if tiles has already been traveled, its value is 2 so this if statement won't be triggered, and no new points is added.
-            """
-            tiles[index] = 2 #SNT: Update the tile's stored value to 2, so the program knows we traveled over this tiles.
-
-            state['score'] += 1 #SNT: The user score is increase by 1.
-            x = (index % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle
-            y = 180 - (index // 20) * 20
-            square(x, y)
-
-        """
-        SNT Updated Game Rules:
-        For level 1, I decided to make the top left corner to be an exit point.
-        """
-        advanced_level(1, 1) #SNT:The top left actually accesible corner is (1,1)
-        
-        """
-        SNT:
-        The next three line moves the turtle up and make it goes to a location 10 upward and 10 horizontally from the pacman vector.
-        To be noted, within the context of this game, a position vector for pacman or ghost lays on gridlinnes, while their actual appearances needed to be in center of the tiles.
-        As such, when pacman is drawn, the drawing coodinates is shifted up 10 and horizontally 10.
-        """
-        up()
-        goto(pacman.x + 10, pacman.y + 10)
-        dot(20, 'yellow')
-
-        for point, course in ghosts:
-            """
-            SNT:
-            This for loop go through each index of the list "ghost". Each time, it accessed and assigned first vector in the sublist in "point" and the second vector in the sublist in "course".
-            "point" is essentially the position vectors of each ghosts.
-            "course" is essentially the velocity vector's of each ghosts.
-            """
-
-            if valid(point + course): #check if the positions where the ghost is aheaded is a valid desitnation
-                point.move(course)
-                """
-                SNT:
-                In this portion of the if statement, valid(point + course) check if the new destination of the ghost is a valid point to move to.
-                If it is, it will move there.
-                """
-            else:
-                """
-                SNT:
-                This portion of the if statements would be activated if the ghost can't move according to its inset velocity vector since said its destination isn't a valid block.
-                Instead, choice() is used to pick one of the random cardinal velocity vector stored in options, and replace the ghost's velocity vector.
-                """
-                options = [ #SNT: Initialized a list "options", which contains 4 different cardinal velocity vectors
-                    vector(5, 0),
-                    vector(-5, 0),
-                    vector(0, 5),
-                    vector(0, -5),
-                ]
-                plan = choice(options) #SNT: A random cardinal velocity vector is picked from "options" and assigned to plan
-                course.x = plan.x #SNT: The course vector is changed into the planned vector.
-                course.y = plan.y
-                """
-                SNT:
-                In the context of this game, this function (move()) is called multiples time, continously in a game. If the ghost can't move in this turn, its velocity is randomly changed.
-                The next time this function is called, the function re-elevaluate if that velocity vector would create a valid motion (aka: don't enter a wall). This keep occuring until a valid direction is randomly picked.
-                """
-            """
-            SNT:
-            The next three lines of code essentially drawa the ghost as a red dot in the center of the square.
-            For similar reasons the pac man describe above, the drawing location is 10 pixels up and horizontal.
-            """
-            up()
-            goto(point.x + 10, point.y + 10) #SNT: Centered the turtle before drawing the red dot, marking the ghost.
-            dot(20, 'red')
-            
-
-        update() #SNT: This function essentially forces the game to redraw everthing to do the most updated versions. 
-
-        for point, course in ghosts:
-            """
-            SNT:
-            This for loop essentially check if the pacman had collided with a ghost. The for loop essentially check for each and every ghost
-            In this game, each pac man and ghost is drawn as a circle of diameter of 20 pixles, or radius of 1o.
-            As such when the distance between them is less than 20, it means they have colided.
-            When this happens the function is interupted, and the game stops
-            """
-            if abs(pacman - point) < 20: #SNT: abs(pacman-point) is the distance between ghost and pacman, which is used to determine collisions.
-                restart_level_1()
-
-        """
-        SNT Updated Games Rules:
-        Previously the ontimer(move, 100) is just executed until the games ends, however, here we only want it to be excuted if the level is correct.
-        """
-        if levels == 1:
-            ontimer(move, 100)
-        else:
-            return None
-        """
-        SNT:
-        ontimer() is turtle function which takes in a function with no arguments for its first argument. In this case this is the function move(), which is the same function it is in.
-        The second arguments is the time intervals before the function in the first interval is re-called.
-        What this does is essentially after move() has been called, move() would carries out all its task and called itself again every 100 ticks of the computers, and keep repeating.
-        """
-
-
-    setup(420, 420, 370, 0) #SNT: This function opens and position the graphic windows which we can see the games with.
-    hideturtle() #SNT: This hides the turtle while it's drawing, allowing the graphic to appear smoother.
-    tracer(False) #SNT: If this is turns off, we can see the motion of the turtle drawing out each and every tiles and scores, and while it's very helpful to see what's the code is doing its not aesthetic.
-
-    """
-    SNT:
-    The code block below essentially moves the turtle "writer" to where the games wants to write out the score.
-    This code block is needed to initialized the turtle "writer". Afterward, the function move() will be called and will call itself continously.
-    move() is also responsible to keep writing the score, so the code block doesn't need to be looped or rewrittern.
-    """
-    writer.goto(160, 160)
-    writer.color('white')
-    writer.write(state['score'])
 
 
 
-    listen() #SNT: A turtle function that listen to any input into the module.
-    """
-    SNT:
-    The turtle function onkey() takes in a function as its first arguement and a key press as its second arguement.
-    Here, the turtle changes the aim of the pacman according to which ever key is pressed.
-    As previously mentioned above, in the context of the game:
-    (5, 0) go right
-    (0, 5) go up
-    (0, -5) go down
-    (-5, 0) go left
-    """
-    onkey(lambda: change(5, 0), 'Right')  #SNT: When the right arrow is pressed, the pacman turns right
-    onkey(lambda: change(-5, 0), 'Left') #SNT: When the left arrow is pressed, the pacman turns left
-    onkey(lambda: change(0, 5), 'Up') #SNT: When the up arrow is pressed, the pacman goes up
-    onkey(lambda: change(0, -5), 'Down') #SNT: When the down arrow is pressed, the pacman goes down
+        listen() #SNT: A turtle function that listen to any input into the module.
 
-    world() #SNT: Intialized the coordinates
-    
-    x_1 = (21 % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle
-    y_1 = 180 - (21 // 20) * 20
-    square(x_1, y_1, 'red')
-    """
-    SNT:
-    move() is called.
-    As mentioned above and within the definition of move(): once move() is called, it will call itself again continously.
-    Apart from that, move() will write out the score, ensure the pacman moves in the direction choosen, the ghosts moves rnadomly, update tiles and "coins" eaten, and check for collision between pac man and ghost.
-    """
-    move()
+        onkey(lambda: change(5, 0), 'Right')  #SNT: When the right arrow is pressed, the pacman turns right
+        onkey(lambda: change(-5, 0), 'Left') #SNT: When the left arrow is pressed, the pacman turns left
+        onkey(lambda: change(0, 5), 'Up') #SNT: When the up arrow is pressed, the pacman goes up
+        onkey(lambda: change(0, -5), 'Down') #SNT: When the down arrow is pressed, the pacman goes down
 
-    done()
+        world() #SNT: Intialized the coordinates
+
+        move()
+
+
+setup(420, 420, 370, 0) #SNT: This function opens and position the graphic windows which we can see the games with.
+hideturtle() #SNT: This hides the turtle while it's drawing, allowing the graphic to appear smoother.
+tracer(False) #SNT: If this is turns off, we can see the motion of the turtle drawing out each and every tiles and scores, and while it's very helpful to see what's the code is doing its not aesthetic.
+
+"""
+SNT:
+The code block below essentially moves the turtle "writer" to where the games wants to write out the score.
+This code block is needed to initialized the turtle "writer". Afterward, the function move() will be called and will call itself continously.
+move() is also responsible to keep writing the score, so the code block doesn't need to be looped or rewrittern.
+"""
+writer.goto(160, 160)
+writer.color('white')
+writer.write(state['score'])
+
+
+
+listen() #SNT: A turtle function that listen to any input into the module.
+"""
+SNT:
+The turtle function onkey() takes in a function as its first arguement and a key press as its second arguement.
+Here, the turtle changes the aim of the pacman according to which ever key is pressed.
+As previously mentioned above, in the context of the game:
+(5, 0) go right
+(0, 5) go up
+(0, -5) go down
+(-5, 0) go left
+"""
+onkey(lambda: change(5, 0), 'Right')  #SNT: When the right arrow is pressed, the pacman turns right
+onkey(lambda: change(-5, 0), 'Left') #SNT: When the left arrow is pressed, the pacman turns left
+onkey(lambda: change(0, 5), 'Up') #SNT: When the up arrow is pressed, the pacman goes up
+onkey(lambda: change(0, -5), 'Down') #SNT: When the down arrow is pressed, the pacman goes down
+
+world() #SNT: Intialized the coordinates
+
+x_1 = (21 % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle
+y_1 = 180 - (21 // 20) * 20
+square(x_1, y_1, 'red')
+"""
+SNT:
+move() is called.
+As mentioned above and within the definition of move(): once move() is called, it will call itself again continously.
+Apart from that, move() will write out the score, ensure the pacman moves in the direction choosen, the ghosts moves rnadomly, update tiles and "coins" eaten, and check for collision between pac man and ghost.
+"""
+move()
+
+
+mainloop()
+
 
