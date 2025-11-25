@@ -37,7 +37,22 @@ ghosts = [
  """
 
 # fmt: off
-tiles = [
+from collections import defaultdict
+import random
+
+# tiles_map: key = (gx, gy) grid coords (integers), value:
+# 0 = wall, 1 = normal dot (uneaten), 2 = eaten/no dot, 3 = GROW tile, 4 = SHRINK tile
+tiles_map = {}  # dynamic map storage
+
+# snake-like pacman body variables
+body = []            # list of vector positions (head first)
+length = 1           # initial length (number of segments)
+grow_amount = 3      # when eating a GROW tile, length += grow_amount
+shrink_amount = 2    # when eating a SHRINK tile, length -= shrink_amount (min 1)
+
+# helper: convert original tiles list (if any) into tiles_map for initial area.
+# To preserve your original layout, we'll paste the old 400-values into this function.
+original_tiles_list = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
     0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
@@ -59,6 +74,28 @@ tiles = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ]
+
+def init_tiles_map():
+    """Initialize tiles_map from original_tiles_list in a 20x20 area with coords (0..19,0..19)."""
+    for i, val in enumerate(original_tiles_list):
+        gx = i % 20
+        gy = i // 20
+        tiles_map[(gx, gy)] = val
+
+# procedural generator for tiles in previously-unseen grid coords
+def generate_tile(gx, gy):
+    rnd = random.random()
+    if rnd < 0.10:
+        return 0  # wall
+    if rnd < 0.13:
+        return 3  # grow tile
+    if rnd < 0.16:
+        return 4  # shrink tile
+    return 1      # normal dot
+
+# initialize map with original layout as seed
+init_tiles_map()
+
 """
 SNT: Creat a map of the game, where 1 is an untraveled path, 2 is a traveled path and walls is 0
 To be noted, the grid itself is presented as essentially a 2D matrix. However, in actuality, it's actually juat one list, but with an enter every 20 entries to appear like a grid.
@@ -91,41 +128,41 @@ def square(x, y):
     path.end_fill() #SNT: This ends and fill the shape intialized on line 65 with color
 
 
-def offset(point):
-    """Return offset of point in tiles."""
+def offset(point):    """Return offset of point in tiles."""
     """
     SNT:
     This function essentially takes in the pixel position of any object and convert it into one of the tiles, whose values can be searched
     up in the list "tiles".
     """
     
-    x = (floor(point.x, 20) + 200) / 20
-    y = (180 - floor(point.y, 20)) / 20
+    gx = int(floor(point.x, 20) + 200) / 20
+    gy = int(180 - floor(point.y, 20)) / 20
     
-    """
-    SNT:
-    Each tiles is essentially 20x20 pixels. The floor(point.x, 20) and floor (point.y, 20)
-    return a value which is an interger multples of 20 (ex: -40, -20, 0, 20, et.c) from the x and y positions of any input "point".
-    When this value is divided by 20, it returned an integer (not int type, but like "math integer") which represent (x, y) position
-    in the list "tiles" when represented as grid.
-    On line 85, the 200 is the horizontal offset that the entire world is created in, so needed to be accounted for here.
-    On line 86, the 180 is the vertical offset that the entire world is created in, so needed to be accounted here.
-    Furthermore, on line 86, floor(point.y, 20) is subtracted since pixel increases in value as we go up vertically. However, the index in list "tiles"
-    increases in value as we go down. Therefore, subtracting floor(point.y, 20) accounted for subtracting
-    """
     
-    index = int(x + y * 20)
-    
-    """
-    SNT:
-    Instead of storing the index as (x, y) where x is the x-th column of the list "tiles" and y as the y-th row of the lits "tiles",
-    index is stored essentially as one ordinal the list "tiles" 
-    To convert (x, y) to an ordinal, we noticed that every row has 20 entries. To skip down 3 rows, we add 3*20.
-    To move sideways by 4 entries, we simply add 4.
-    As such the general formula to convert (x, y) to an ordinal numbers is:
-    (x, y) -> x + y * (number of entries per row) where 20 is the number of entries per row 
-    """
-    return index
+    return (gx , gy)
+
+
+def valid(point):    """Return True if point is valid (not wall) in tiles_map."""
+    gx, gy = offset(point)
+
+    # Ensure tile exists; if not, generate it on demand
+    if (gx, gy) not in tiles_map:
+        tiles_map[(gx, gy)] = generate_tile(gx, gy)
+
+    # If current tile is wall -> invalid
+    if tiles_map[(gx, gy)] == 0:
+        return False
+
+    # Check the top-right corner of the bounding box (point + 19)
+    gx2, gy2 = offset(point + 19)
+    if (gx2, gy2) not in tiles_map:
+        tiles_map[(gx2, gy2)] = generate_tile(gx2, gy2)
+    if tiles_map[(gx2, gy2)] == 0:
+        return False
+
+    # Ensure movement is along grid lines
+    return point.x % 20 == 0 or point.y % 20 == 0
+
 
 
 def valid(point):
@@ -165,33 +202,39 @@ def valid(point):
     """
 
 
-def world():
+def world(view_radius = 10):
     """Draw world using path."""
     bgcolor('black') #SNT: Set background color to black
     path.color('blue') #SNT: Set "path" colour to blue
 
-    for index in range(len(tiles)): 
-        
-        """
-        SNT:
-        This for loop goes through each values of the list "tiles", and for each of the value, it draws a corresponding square tiles in pixles for us to view.
-        If value of a tile in the list "tiles" is greater than zero, it draws a square using the square() function aboves.
-        If the value is 1, the turtle "path" is lifted from the page and shift up 10 and horizontally 10, and white dot of 2 pixle is drawn, creating those coins that the pac man can eat.
-        In the context of this game, 0 is wall, 1 is untraveled path, 2 is traveled path.
-        """
-        
-        tile = tiles[index] 
+    center_gx, center_gy = offset(pacman)
 
-        if tile > 0:
-            x = (index % 20) * 20 - 200 #SNT: Convert the corresponding values from the list "tiles" to an actual tiles that hte user can see, refer to square()'s commenting for more information as they are the same thing.
-            y = 180 - (index // 20) * 20 #SNT: Similar to the above
-            square(x, y) #SNT: Draw the actual tiles
+    # iterate over a square region around center
+    for dy in range(-view_radius, view_radius + 1):
+        for dx in range(-view_radius, view_radius + 1):
+            gx = center_gx + dx
+            gy = center_gy + dy
 
-            if tile == 1:
-                path.up() #SNT: If tile == 1, then the tutle "path" is lifted of the page, shifted and draw a dot acting as "coins" for the pac man to eat.
-                path.goto(x + 10, y + 10) #SNT: To be noted, when the tile is drawn, it's always draw on the grid line. So when we shifted 10 up and 10 right, the "coins" is draw in center of the tiles
-                path.dot(2, 'white')
+            # ensure tile exists
+            if (gx, gy) not in tiles_map:
+                tiles_map[(gx, gy)] = generate_tile(gx, gy)
 
+            tile = tiles_map[(gx, gy)]
+            # convert grid (gx,gy) back to pixel coords with same origin as before
+            x = gx * 20 - 200
+            y = 180 - gy * 20
+
+            if tile > 0:
+                square(x, y)
+                path.up()
+                path.goto(x + 10, y + 10)
+                # draw dot for normal bean
+                if tile == 1:
+                    path.dot(2, 'white')
+                elif tile == 3:
+                    path.dot(6, 'green')
+                elif tile == 4:
+                    path.dot(6, 'magenta')
 
 def move():
     """Move pacman and all ghosts."""
@@ -202,14 +245,6 @@ def move():
     """
     
     writer.undo() #SNT: Undo the what the previous turtle "writer" wrote.
-    
-    """
-    SNT:
-    In the context in which move() is called, a few line above, the turtle "writer" is commanded to write out the score.
-    As such writer.undo() erased any previously written out score.
-    Furthermore, when move() is called, in itself is a function that keeps on calling move(). As such, move is continously called again and again.
-    Therefore, having writer.undo() is neccesary to erased previously written scores.
-    """
     
     writer.write(state['score']) #SNT: Use the turtle "writer" to write out the new score of the game.
 
@@ -224,86 +259,56 @@ def move():
     if valid(pacman + aim):
         pacman.move(aim)
         
-        """
-        SNT:
-        This function checks if the pacman can moves to a certain place.
-        Understanding that "pacman" and "aims" are both vectors, pactman + aim is essentially the position vector of where the pacman intends to go.
-        valid(pacman + aim) check if the points are valid for the pacman to move into.
-        pacman.move(aim) essentially moves pacman by aim. 
-        """
+    head = vector(pacman.x, pacman.y)
+    body.insert(0, head)
+    while len(body) > length:
+        body.pop()
 
-    index = offset(pacman) #SNT: Locates the location of pacman on the pixel coordinates and returns its index in the list "tiles"
+    gx, gy = offset(pacman)
+    if (gx,gy) not in tiles_map:
+        tiles_map[(gx,gy)] = generate_tile(gx,gy)
+    tile = tiles_map[(gx,gy)]
 
-    if tiles[index] == 1:
-        """
-        SNT:
-        This if statement check if the current location of the pacman is in an untraveled path. This allows the games to tally score
-        This is accomplished if the tile's stored value at index in the list "tiles" is 1.
-        If it is, the tile's stored value is changed to 2. And a score is added
-        In the context of the game, 1 is untraveled path, 2 is travelled path.
-        As such, if tiles has already been traveled, its value is 2 so this if statement won't be triggered, and no new points is added.
-        """
-        tiles[index] = 2 #SNT: Update the tile's stored value to 2, so the program knows we traveled over this tiles.
+    if tile == 1:
+        tiles_map[(gx,gy)] = 2
+        state['score'] += 1
+    elif tile == 3:
+        tiles_map[(gx,gy)] = 2
+        length += grow_amount
+        state['score'] += 5
+    elif tile == 4:
+        tiles_map[(gx,gy)] = 2
+        length = max(1, length - shrink_amount)
+        state['score'] = max(0, state['score'] - 2)
 
-        state['score'] += 1 #SNT: The user score is increase by 1.
-        x = (index % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle
-        y = 180 - (index // 20) * 20
-        square(x, y)
+    # redraw empty
+    if tile in (1,3,4):
+        x = gx*20 - 200
+        y = 180 - gy*20
+        square(x,y)
 
-    """
-    SNT:
-    The next three line moves the turtle up and make it goes to a location 10 upward and 10 horizontally from the pacman vector.
-    To be noted, within the context of this game, a position vector for pacman or ghost lays on gridlinnes, while their actual appearances needed to be in center of the tiles.
-    As such, when pacman is drawn, the drawing coodinates is shifted up 10 and horizontally 10.
-    """
-    up()
-    goto(pacman.x + 10, pacman.y + 10)
-    dot(20, 'yellow')
-
-    for point, course in ghosts:
-        """
-        SNT:
-        This for loop go through each index of the list "ghost". Each time, it accessed and assigned first vector in the sublist in "point" and the second vector in the sublist in "course".
-        "point" is essentially the position vectors of each ghosts.
-        "course" is essentially the velocity vector's of each ghosts.
-        """
-
-        if valid(point + course): #check if the positions where the ghost is aheaded is a valid desitnation
-            point.move(course)
-            """
-            SNT:
-            In this portion of the if statement, valid(point + course) check if the new destination of the ghost is a valid point to move to.
-            If it is, it will move there.
-            """
-        else:
-            """
-            SNT:
-            This portion of the if statements would be activated if the ghost can't move according to its inset velocity vector since said its destination isn't a valid block.
-            Instead, choice() is used to pick one of the random cardinal velocity vector stored in options, and replace the ghost's velocity vector.
-            """
-            options = [ #SNT: Initialized a list "options", which contains 4 different cardinal velocity vectors
-                vector(5, 0),
-                vector(-5, 0),
-                vector(0, 5),
-                vector(0, -5),
-            ]
-            plan = choice(options) #SNT: A random cardinal velocity vector is picked from "options" and assigned to plan
-            course.x = plan.x #SNT: The course vector is changed into the planned vector.
-            course.y = plan.y
-            """
-            SNT:
-            In the context of this game, this function (move()) is called multiples time, continously in a game. If the ghost can't move in this turn, its velocity is randomly changed.
-            The next time this function is called, the function re-elevaluate if that velocity vector would create a valid motion (aka: don't enter a wall). This keep occuring until a valid direction is randomly picked.
-            """
-        """
-        SNT:
-        The next three lines of code essentially drawa the ghost as a red dot in the center of the square.
-        For similar reasons the pac man describe above, the drawing location is 10 pixels up and horizontal.
-        """
+    # draw body
+    for segment in body[1:]:
         up()
-        goto(point.x + 10, point.y + 10) #SNT: Centered the turtle before drawing the red dot, marking the ghost.
-        dot(20, 'red')
-        
+        goto(segment.x+10, segment.y+10)
+        dot(18,'orange')
+
+    # draw head
+    up()
+    goto(pacman.x+10, pacman.y+10)
+    dot(20,'yellow')
+
+    # ghost logic
+    for point, course in ghosts:
+        if valid(point + course):
+            point.move(course)
+        else:
+            new = choice([vector(5,0),vector(-5,0),vector(0,5),vector(0,-5)])
+            course.x, course.y = new.x, new.y
+
+        up()
+        goto(point.x+10, point.y+10)
+        dot(20,'red')
 
     update() #SNT: This function essentially forces the game to redraw everthing to do the most updated versions. 
 
@@ -390,4 +395,5 @@ However, since move() call itself upon being called, the code isn't actually bei
 done() actually stops the turtle programing that responsive for the game's graphic, but doesn't close the window. This allows the viewer to keep viewing.
 """
 done()
+
 
