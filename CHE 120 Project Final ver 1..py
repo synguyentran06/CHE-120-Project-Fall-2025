@@ -176,6 +176,7 @@ def advanced_level(row, column):
     SNT Updated Games Rules:
     If the player reaches this tiles, then their level advances.
     """
+    global levels
     current_tiles = offset(pacman)
     tiles_index = column + 20 * row #SNT: Convert the grids layout to the index with the list "tiles", which is used to store the map of the game
     if tiles_index == current_tiles:
@@ -210,9 +211,7 @@ if levels == 1 : #SNT Updated: level one:
     This will draw a redsquare in the top left corner, indicating an exit.
     21 is the index within the list "tiles" which indicates the top left corner
     """
-    x_1 = (21 % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle
-    y_1 = 180 - (21 // 20) * 20
-    square(x_1, y_1, 'red')
+    
     
     # fmt: off
     tiles = [
@@ -248,6 +247,14 @@ if levels == 1 : #SNT Updated: level one:
         SNT Updated Game rules,
         This function essentially stores all the intial conditions for level 1.
         When it is called it resets everything.
+        
+        """
+
+        global aim, pacman, ghosts, tiles, writer
+        writer.undo()
+        """
+        SNT:
+        Since the function requires to have the restart function it is neccesary to have it here.
         """
         aim = vector(5, 0) #SNT: Create an aiming vector with the value of [5, 0], which in the context of this games, is pointing to the right.
         pacman = vector(-40, -80) #SNT: Create a pacman vector with the value of [-40, -80]
@@ -279,6 +286,12 @@ if levels == 1 : #SNT Updated: level one:
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         ]
+        #SNT: This next portion of the code essentially reset everything
+        world()
+        writer.goto(160, 160)
+        writer.color('white')
+        writer.write(state['score'])
+        writer.write(state['score'])
         x_1 = (21 % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle, 21 was used because thats the index within the list "tiles" of the 
         y_1 = 180 - (21 // 20) * 20
         square(x_1, y_1, 'red')
@@ -295,6 +308,7 @@ if levels == 1 : #SNT Updated: level one:
         The main purpose of this function is to move the pac man and the ghost around.
         However, some of the code here makes little sense out of the context which it is used.
         """
+        global aim, pacman, ghosts, tiles, levels #SNT: This added, to make sure when the game restart, it actually reset the function
         
         writer.undo() #SNT: Undo the what the previous turtle "writer" wrote.
         
@@ -426,7 +440,7 @@ if levels == 1 : #SNT Updated: level one:
         if levels == 1:
             ontimer(move, 100)
         else:
-            return
+            return None
         """
         SNT:
         ontimer() is turtle function which takes in a function with no arguments for its first argument. In this case this is the function move(), which is the same function it is in.
@@ -468,7 +482,10 @@ if levels == 1 : #SNT Updated: level one:
     onkey(lambda: change(0, -5), 'Down') #SNT: When the down arrow is pressed, the pacman goes down
 
     world() #SNT: Intialized the coordinates
-
+    
+    x_1 = (21 % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle
+    y_1 = 180 - (21 // 20) * 20
+    square(x_1, y_1, 'red')
     """
     SNT:
     move() is called.
