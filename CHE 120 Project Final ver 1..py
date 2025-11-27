@@ -181,14 +181,19 @@ def advanced_level(row, column):
     tiles_index = column + 20 * row #SNT: Convert the grids layout to the index with the list "tiles", which is used to store the map of the game
     if tiles_index == current_tiles:
         levels += 1
+    x_1 = (tiles_index % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle, 21 was used because thats the index within the list "tiles" of the 
+    y_1 = 180 - (tiles_index // 20) * 20
+    square(x_1, y_1, 'red')
+    
+
         
 
 """
 SNT Updated games rules:
 This is the first level of the games, which is the unchanged version.
 """
-aim = vector(5, 0) #SNT: Create an aiming vector with the value of [5, 0], which in the context of this games, is pointing to the right.
-pacman = vector(-40, -80) #SNT: Create a pacman vector with the value of [-40, -80]
+aim = vector(5, 0) #SNT: Creat the aiming vector for the pacman
+pacman = vector(-40, -80) #SNT: Reset the location of the pacman. If reset_tiles is False, pacman doesn't rest its position.
 ghosts = [
     [vector(-180, 160), vector(5, 0)],
     [vector(-180, -160), vector(0, 5)],
@@ -240,7 +245,7 @@ To be noted, the grid itself is presented as essentially a 2D matrix. However, i
 """
 # fmt: on
 
-def restart_level_1():
+def restart_level_1(reset_tiles = True):
     """
     SNT Updated Game rules,
     This function essentially stores all the intial conditions for level 1.
@@ -255,44 +260,47 @@ def restart_level_1():
     Since the function requires to have the restart function it is neccesary to have it here.
     """
     aim = vector(5, 0) #SNT: Create an aiming vector with the value of [5, 0], which in the context of this games, is pointing to the right.
-    pacman = vector(-40, -80) #SNT: Create a pacman vector with the value of [-40, -80]
     ghosts = [
-        [vector(-180, 160), vector(5, 0)],
+        [vector(-180, 100), vector(5, 0)],
         [vector(-180, -160), vector(0, 5)],
         [vector(100, 160), vector(0, -5)],
         [vector(100, -160), vector(-5, 0)],
     ]
-    tiles = [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-        0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-        0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-        0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
-        0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-        0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-        0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-        0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-        0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-        0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-        0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0,
-        0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ]
+    if reset_tiles == True:
+        """
+        For the third level, we want the wrecked world map from the second level to not be reset.
+        As such, we add an extra parameter that will prevent the world map from reseting
+        """
+        pacman = vector(-40, -80) #SNT: Reset the location of the pacman. If reset_tiles is False, pacman doesn't rest its position.
+        tiles = [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+            0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+            0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+            0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+            0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+            0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+            0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+            0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+            0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0,
+            0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+            0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        ]
+
     #SNT: This next portion of the code essentially reset everything
     world()
     writer.goto(160, 160)
     writer.color('white')
     writer.write(state['score'])
     writer.write(state['score'])
-    x_1 = (21 % 20) * 20 - 200 #SNT: The next three line redraw the tiles, this time without the "coins" in the middle, 21 was used because thats the index within the list "tiles" of the 
-    y_1 = 180 - (21 // 20) * 20
-    square(x_1, y_1, 'red')
 
 
 def move():
@@ -464,7 +472,7 @@ def move():
 
 #SNT: Since some portion of the code should only be executed, once, we created a count function 
 
-count = 0
+count = 0 #SNT UpdatedL This is initialized so we can keep track of what needs to be only called once.
 traveled = [] #SNT Updated: Initialized an empty list that would keep track of which path the pacman travelled in.
 
 def move_2():
@@ -473,7 +481,7 @@ def move_2():
     SNT: To make it easier to integrate everybody's code, we make sure to have everything reassigned so it's easier to make sure everything works toghether.
     We have the functions nestles like dolls like this because the game just doesn't work otherwise
     """
-    global aim, pacman, ghosts, tiles, count, move
+    global aim, pacman, ghosts, tiles, count, move, traveled
     if count == 0:
         """
         When move is rewritten, we want to reintialized all variables to create a new map.
@@ -491,7 +499,6 @@ def move_2():
     However, the the old path will become block when pacman ate a coin. This is intentional to avoid blocking the user too early.
     """
     def modified_game_rules():
-        global traveled
         just_traveled_tiles = offset(pacman) #SNT: Track the index in the list "tiles" that the pacman currently in
         traveled.append(just_traveled_tiles) #create a list that track the path the pacman traveled
         if len(traveled) > 10:
@@ -577,6 +584,7 @@ def move_2():
     for point, course in ghosts:
         
         if abs(pacman - point) < 20: #SNT: abs(pacman-point) is the distance between ghost and pacman, which is used to determine collisions.
+            traveled = []
             restart_level_1() #SNT: Since level 1 and level 2 has the same set up, I do it to make it easier
     
     if levels == 2:
@@ -596,11 +604,7 @@ def move_3():
     global aim, pacman, ghosts, tiles, count, move
 
     if count == 0:
-        """
-        SNT:
-        Since level 4 essentially uses the same map as the first level, so we reuse restart_level_1()
-        """
-        restart_level_1()
+        restart_level_1(False)
         count += 1
     """
     HN:
@@ -727,7 +731,7 @@ def move_3():
         square(x, y)
 
 
-    advanced_level(1, 1)
+    advanced_level(17, 15)
 
 
     """
@@ -806,7 +810,8 @@ def move_3():
         ends as nothing is called as the return here.
         """
         if abs(pacman - point) < 20: #SNT: abs(pacman-point) is the distance between ghost and pacman, which is used to determine collisions.
-            restart_level_1()
+            pacman = vector(-140, 160)
+            restart_level_1(False)
 
     if levels == 3:
         ontimer(move, 100)
@@ -929,11 +934,18 @@ def move_4():
         ontimer(move, 100)
     if levels == 5:
         count = 0 #SNT: Reinitialized the count
-        move = move_3 #SNT: Change move() to move_4() which is level 4
+        move = ending_sequence #SNT: Change move() to move_4() which is level 4
         move() #SNT: Activates the function so ontimer() works
 
     
-    
+def ending_sequence():
+    path.clear()
+    writer.clear()
+    Screen().clear()
+    bgcolor('black')
+    writer.goto(-180, 160)
+    writer.write(str("You have completed pacman, your score is: " + str(state['score'])))
+
 
 
 setup(420, 420, 370, 0) #SNT: This function opens and position the graphic windows which we can see the games with.
