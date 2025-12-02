@@ -746,7 +746,7 @@ def move_3():
 
     for point, course in ghosts:
         """
-        SNT:
+        SNT & HGT:
         This for loop go through each index of the list "ghost". Each time, it accessed and assigned first vector in the sublist in "point" and the second vector in the sublist in "course".
         "point" is essentially the position vectors of each ghosts.
         "course" is essentially the velocity vector's of each ghosts.
@@ -798,7 +798,7 @@ def move_3():
 
     for point, course in ghosts:
         """
-        SNT:
+        SNT & HGT:
         This for loop essentially check if the pacman had collided with a ghost. The for loop essentially check for each and every ghost
         In this game, each pac man and ghost is drawn as a circle of diameter of 20 pixles, or radius of 1o.
         As such when the distance between them is less than 20, it means they have colided.
@@ -848,7 +848,7 @@ def move_4():
  
     def modified_games_rules_2():
         """
-        SNT Modified Games Rules:
+        SNT & HGT Modified Games Rules:
         This function essentially keep track of all the tiles on which the pacman had traveled.
         It then spawn a new ghost at that location, moving in the opposite direction as the pacman.
         This function is then implemanted in the move() function.
@@ -883,7 +883,7 @@ def move_4():
         tiles[index] = 2 #SNT: Update the tile's stored value to 2, so the program knows we traveled over this tiles.
 
         """
-        SNT Modified Game Rules:
+        SNT & HGT Modified Game Rules:
         To make it fairer for the players, we make it so that only when the pacman had eaten a coins would a new ghost be spawned.
         """
         modified_games_rules_2()
